@@ -1,0 +1,57 @@
+version: "3.11"
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.Frontend
+    ports:
+      - 8501:8501
+    networks:
+      - web
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.Backend
+    ports:
+      - 5005:5005
+    depends_on:
+      - frontend
+    networks:
+      - web
+
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    depends_on:
+      - proxy
+    ports:
+      - 8000:8000
+      - 9000:9000
+    networks:
+      - web
+
+  proxy:
+    build: ./proxy
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+     - frontend
+     - backend
+    networks:
+      - web
+  
+networks:
+  web:
+    driver: bridge
+
+volumes:
+  portainer_data: {}

@@ -1,0 +1,14 @@
+https://www.kaggle.com/datasets/haianhjobs/textsummarizationvietnamese1
+
+About Dataset
+Bộ dữ liệu được crawl từ Báo Lao Động ngày 19/05/2022. Được phân làm 7 file.
+
+Thông tin các thuộc tính:
+1 - URL: Url của bài báo.
+2 - Title: Tên (tiêu đề) của bài báo.
+3 - Summary: Tóm tắt nội dung của bài báo.
+4 - Contents: Nội dung chi tiết của bài báo.
+5 - Data: Ngày viết (xuất bản) của bài báo.
+6 - Author(s): Tác giả của bài báo.
+7 - Category: Thể loại của bài báo.
+8 - Tags: Các tags có liên quan đến bài báo.
