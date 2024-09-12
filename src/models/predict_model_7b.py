@@ -15,6 +15,8 @@ print(f"\033[95mInit model 7B success\033[0m")
 
 class Model7B():
     def __init__(self):
+        # Xoá bộ đệm
+        torch.cuda.empty_cache()
         # Defaults Model
         self.weights_dir = "weights/"
         self.tokenizer_path = self.weights_dir + 'tokenizer-7b.model'

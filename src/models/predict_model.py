@@ -5,26 +5,29 @@ from gemma.model import GemmaForCausalLM
 from datetime import datetime
 
 # Choose variant and machine type
-VARIANT = '2b-it'
-MACHINE_TYPE = 'cuda' if torch.cuda.is_available() else 'cpu'
+VARIANT = "2b-it"
+MACHINE_TYPE = "cuda" if torch.cuda.is_available() else "cpu"
 
 CONFIG = VARIANT[:2]
-if CONFIG == '2b':
-    CONFIG = '2b-v2'
+if CONFIG == "2b":
+    CONFIG = "2b-v2"
 
 print(f"\033[95mInit model 2B success\033[0m")
 
-class Model2B():
+
+class Model2B:
     def __init__(self):
+        # Xoá bộ đệm
+        torch.cuda.empty_cache()
         # Defaults Model
         self.weights_dir = "weights/"
-        self.tokenizer_path = self.weights_dir + 'tokenizer-2b.model'
-        self.checkpoint_path = self.weights_dir + 'model-2b.ckpt'
+        self.tokenizer_path = self.weights_dir + "tokenizer-2b.model"
+        self.checkpoint_path = self.weights_dir + "model-2b.ckpt"
 
         # Set up model config.
         model_config = get_model_config(CONFIG)
         model_config.tokenizer = self.tokenizer_path
-        model_config.quant = 'quant' in VARIANT
+        model_config.quant = "quant" in VARIANT
 
         # Instantiate the model and load the weights.
         torch.set_default_dtype(model_config.get_dtype())
@@ -39,35 +42,37 @@ class Model2B():
         # Định dạng thời gian theo ngày/tháng/năm và giờ/phút/giây
         formatted_time = now.strftime("%d/%m/%Y %H:%M:%S")
 
-        word_count = len(sentence.split(' '))
+        word_count = len(sentence.split(" "))
         limit = 200
 
         print(f"\033[93m[{formatted_time}]: Model predicting...\033[0m")
 
         prompt = ""
-        if type == 'Tóm tắt ngắn gọn': 
+        if type == "Tóm tắt ngắn gọn":
             low_range = int(word_count * 0.5)
             limit = low_range if low_range > limit else limit
-            prompt = prompt_generator.short_predict_prompt(sentence=sentence, limit=limit)
+            prompt = prompt_generator.short_predict_prompt(
+                sentence=sentence, limit=limit
+            )
 
-        elif type == 'Tóm tắt chi tiết': 
+        elif type == "Tóm tắt chi tiết":
             limit = int(word_count * 0.8)
-            prompt = prompt_generator.long_predict_prompt(sentence=sentence, limit=limit)
+            prompt = prompt_generator.long_predict_prompt(
+                sentence=sentence, limit=limit
+            )
 
         print(f"\033[95m[Prompt]: {prompt}\033[0m")
 
-        prompt.encode('utf-8')
+        prompt.encode("utf-8")
 
         # Generate sample
         result = self.model.generate(
-            prompts=prompt,
-            device=self.device,
-            output_len=limit
+            prompts=prompt, device=self.device, output_len=limit
         )
 
-        result = result.replace('<end_of_turn>', '')
-        result = result.replace('<div>', '')
-        result = result.replace('</div>', '')
+        result = result.replace("<end_of_turn>", "")
+        result = result.replace("<div>", "")
+        result = result.replace("</div>", "")
         result = result if len(result) > 0 else "Lỗi hệ thống, vui lòng thử lại."
 
         # Lấy thời gian hiện tại
