@@ -4,8 +4,8 @@ from gemma.config import get_model_config
 from gemma.model import GemmaForCausalLM
 from datetime import datetime
 # Choose variant and machine type
-VARIANT = '7b-it-quant' #@param ['2b', '2b-it', '9b', '9b-it', '27b', '27b-it']
-MACHINE_TYPE = 'cuda' #@param ['cuda', 'cpu']
+VARIANT = '7b-it-quant'
+MACHINE_TYPE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 CONFIG = VARIANT
 if CONFIG == '7b-it-quant':

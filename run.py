@@ -71,7 +71,7 @@ with col2:
         with st.spinner("Đang xử lý..."):
             try:
                 # Send request to API
-                api_url = "http://192.168.50.47:5005/predict"  # Replace with actual API URL
+                api_url = "http://localhost:5005/predict"  # Replace with actual API URL
                 headers = {"Content-Type": "application/json"}
                 data = {"text": prompt, "type": summary_type}
 
