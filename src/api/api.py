@@ -1,11 +1,11 @@
 from fastapi import APIRouter, status 
-from models.predict_model import SummarizeModel
+from models.predict_model import Model2B
 from pydantic import BaseModel
 from helper.status import handle_with_status
 
 api_router = APIRouter(prefix='/predict')
 
-model = SummarizeModel()
+model = Model2B()
 
 class ModelEntity(BaseModel):
     text: str

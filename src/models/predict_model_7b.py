@@ -3,23 +3,22 @@ import helper.prompt as prompt_generator
 from gemma.config import get_model_config
 from gemma.model import GemmaForCausalLM
 from datetime import datetime
-
 # Choose variant and machine type
-VARIANT = '2b-it'
-MACHINE_TYPE = 'cuda' if torch.cuda.is_available() else 'cpu'
+VARIANT = '7b-it-quant' #@param ['2b', '2b-it', '9b', '9b-it', '27b', '27b-it']
+MACHINE_TYPE = 'cuda' #@param ['cuda', 'cpu']
 
-CONFIG = VARIANT[:2]
-if CONFIG == '2b':
-    CONFIG = '2b-v2'
+CONFIG = VARIANT
+if CONFIG == '7b-it-quant':
+    CONFIG = '7b'
 
-print(f"\033[95mInit model 2B success\033[0m")
+print(f"\033[95mInit model 7B success\033[0m")
 
-class Model2B():
+class Model7B():
     def __init__(self):
         # Defaults Model
         self.weights_dir = "weights/"
-        self.tokenizer_path = self.weights_dir + 'tokenizer-2b.model'
-        self.checkpoint_path = self.weights_dir + 'model-2b.ckpt'
+        self.tokenizer_path = self.weights_dir + 'tokenizer-7b.model'
+        self.checkpoint_path = self.weights_dir + 'model-7b-quantization.ckpt'
 
         # Set up model config.
         model_config = get_model_config(CONFIG)
