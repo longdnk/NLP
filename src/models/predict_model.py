@@ -45,7 +45,7 @@ class Model2B:
         word_count = len(sentence.split(" "))
         limit = 200
 
-        print(f"\033[93m[{formatted_time}]: Model predicting...\033[0m")
+        print(f"\033[93m[{formatted_time}]: Model 2b predicting...\033[0m")
 
         prompt = ""
         if type == "Tóm tắt ngắn gọn":
@@ -66,14 +66,15 @@ class Model2B:
         prompt.encode("utf-8")
 
         # Generate sample
-        result = self.model.generate(
-            prompts=prompt, device=self.device, output_len=limit
-        )
+        result = "OK DONE"
+        # result = self.model.generate(
+        #     prompts=prompt, device=self.device, output_len=limit
+        # )
 
-        result = result.replace("<end_of_turn>", "")
-        result = result.replace("<div>", "")
-        result = result.replace("</div>", "")
-        result = result if len(result) > 0 else "Lỗi hệ thống, vui lòng thử lại."
+        # result = result.replace("<end_of_turn>", "")
+        # result = result.replace("<div>", "")
+        # result = result.replace("</div>", "")
+        # result = result if len(result) > 0 else "Lỗi hệ thống, vui lòng thử lại."
 
         # Lấy thời gian hiện tại
         now = datetime.now()

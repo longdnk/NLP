@@ -5,14 +5,12 @@ from gemma.model import GemmaForCausalLM
 from datetime import datetime
 import os
 
-os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = 'max_split_size_mb:512'
 # Choose variant and machine type
-VARIANT = '7b-it-quant'
 MACHINE_TYPE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-CONFIG = VARIANT
-if CONFIG == '7b-it-quant':
-    CONFIG = '7b'
+VARIANT = '7b-it-quant'
+CONFIG = '7b'
 
 print(f"\033[95mInit model 7B success\033[0m")
 
@@ -46,7 +44,7 @@ class Model7B():
         word_count = len(sentence.split(' '))
         limit = 200
 
-        print(f"\033[93m[{formatted_time}]: Model predicting...\033[0m")
+        print(f"\033[93m[{formatted_time}]: Model 7b predicting...\033[0m")
 
         prompt = ""
         if type == 'Tóm tắt ngắn gọn': 
@@ -62,17 +60,18 @@ class Model7B():
 
         prompt.encode('utf-8')
 
+        result = "OK DONE"
         # Generate sample
-        result = self.model.generate(
-            prompts=prompt,
-            device=self.device,
-            output_len=limit
-        )
+        # result = self.model.generate(
+        #     prompts=prompt,
+        #     device=self.device,
+        #     output_len=limit
+        # )
 
-        result = result.replace('<end_of_turn>', '')
-        result = result.replace('<div>', '')
-        result = result.replace('</div>', '')
-        result = result if len(result) > 0 else "Lỗi hệ thống, vui lòng thử lại."
+        # result = result.replace('<end_of_turn>', '')
+        # result = result.replace('<div>', '')
+        # result = result.replace('</div>', '')
+        # result = result if len(result) > 0 else "Lỗi hệ thống, vui lòng thử lại."
 
         # Lấy thời gian hiện tại
         now = datetime.now()

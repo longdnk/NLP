@@ -1,6 +1,10 @@
 import streamlit as st
 import requests
 from io import BytesIO
+import docx2txt
+import fitz  # PyMuPDF
+import os
+
 # Set the app to wide mode
 st.set_page_config(layout="wide")
 
@@ -11,6 +15,8 @@ if "assistant_messages" not in st.session_state:
     st.session_state.assistant_messages = []
 if "result_text" not in st.session_state:
     st.session_state.result_text = ""
+if "compression_ratio" not in st.session_state:
+    st.session_state.compression_ratio = 50  # Default value
 
 # Split the page into two columns
 col1, col2 = st.columns(2)
@@ -21,11 +27,31 @@ with col1:
     prompt = ""
 
     # Add file uploader for text files
-    uploaded_file = st.file_uploader("Tải lên một tệp văn bản (.txt)", type=["txt"])
+    uploaded_file = st.file_uploader("Tải lên một tệp văn bản (.txt, .docx, .pdf)", type=["txt", "docx", "pdf"])
 
-    # If a file is uploaded, read its content and set it as the prompt
+    # If a file is uploaded, process it based on its type
     if uploaded_file is not None:
-        prompt = uploaded_file.read().decode("utf-8")
+        file_extension = uploaded_file.name.split('.')[-1].lower()
+        temp_filename = f"temp_file.{file_extension}"
+
+        # Save uploaded file to a temporary location
+        with open(temp_filename, "wb") as f:
+            f.write(uploaded_file.read())
+
+        # Process the file based on its extension
+        if file_extension == 'txt':
+            prompt = open(temp_filename, "r", encoding="utf-8").read()
+        elif file_extension in ['docx', 'dotx']:
+            prompt = docx2txt.process(temp_filename)
+        elif file_extension == 'pdf':
+            doc = fitz.open(temp_filename)
+            prompt = ""
+            for page in doc:
+                prompt += page.get_text('text').replace('\n', '')
+            doc.close()
+
+        # Clean up temporary file
+        os.remove(temp_filename)
 
     # Input text area
     prompt = st.text_area(
@@ -41,6 +67,17 @@ with col1:
         "Chọn loại tóm tắt:", ("Tóm tắt ngắn gọn", "Tóm tắt chi tiết")
     )
 
+    # Add input for compression ratio
+    compression_ratio = st.selectbox(
+        "Chọn tỷ lệ nén:", [50, 60, 70, 80, 90] if summary_type == "Tóm tắt chi tiết" else [50, 60, 70]
+    )
+    st.session_state.compression_ratio = compression_ratio
+
+    # Add model selection
+    model_type = st.selectbox(
+        "Chọn mô hình:", ("2b", "7b")
+    )
+
     # Button to submit the text
     submit = st.button("Tóm tắt", type="primary")
 
@@ -53,7 +90,9 @@ with col2:
             <h3>Hướng dẫn sử dụng:</h3>
             <p>1. Nhập dữ liệu hoặc dán dữ liệu vào ô bên trái.</p>
             <p>2. Chọn tùy chọn: tóm tắt ngắn gọn hay tóm tắt chi tiết.</p>
-            <p>3. Bấm nút Tóm Tắt và tận hưởng kết quả.</p>
+            <p>3. Chọn tỷ lệ nén phù hợp.</p>
+            <p>4. Chọn mô hình: 2b hoặc 7b.</p>
+            <p>5. Bấm nút Tóm Tắt và tận hưởng kết quả.</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -65,23 +104,23 @@ with col2:
         unsafe_allow_html=True,
     )
 
-    # Display loading state
+    # Display loading state and result
     result = ""
     if submit and prompt:
         with st.spinner("Đang xử lý..."):
             try:
                 # Send request to API
-                api_url = "http://192.168.50.47:5005/predict"  # Replace with actual API URL
+                api_url = "http://localhost:5005/predict"  # Replace with actual API URL
                 headers = {"Content-Type": "application/json"}
-                data = {"text": prompt, "type": summary_type}
+                data = {"text": prompt, "type": summary_type, "model": model_type, "compression_ratio": compression_ratio}
 
                 response = requests.post(api_url, json=data, headers=headers)
 
                 # Handle API response
                 if response.status_code == 200:
                     response_data = response.json()
-                    st.toast("Hoàn thành", icon="✅")
                     result = response_data["data"]
+                    st.success("Hoàn thành")  # Using st.success for success message
                 else:
                     result = "Error: Unable to summarize the text."
             except Exception as e:
@@ -92,10 +131,15 @@ with col2:
 
     # Display result if available with max height of 400px and scroll enabled
     if st.session_state.result_text:
+        compression_message = f"Tỷ lệ nén: {st.session_state.compression_ratio}% so với văn bản gốc"
         st.markdown(
             f"""
                 <div style="max-height: 400px; overflow-y: auto; padding: 10px;">
+                    <p>{compression_message}</p>
                     {st.session_state.result_text}</div>
             """,
             unsafe_allow_html=True,
         )
+        # Copy to clipboard button with icon
+        if st.button("Sao chép vào bộ nhớ đệm", key="copy_button"):
+            st.success("Đã sao chép vào bộ nhớ đệm!")  # Using st.success for copy confirmation

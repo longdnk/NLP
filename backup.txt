@@ -475,3 +475,741 @@ with col2:
 #             st.session_state.result_text,
 #             unsafe_allow_html=True,
 #         )
+
+
+# 12/9/2024 No Item model
+import streamlit as st
+import requests
+from io import BytesIO
+# Set the app to wide mode
+st.set_page_config(layout="wide")
+
+st.title("Công cụ tóm tắt văn bản")
+
+# Initialize session state for storing assistant messages and result text
+if "assistant_messages" not in st.session_state:
+    st.session_state.assistant_messages = []
+if "result_text" not in st.session_state:
+    st.session_state.result_text = ""
+
+# Split the page into two columns
+col1, col2 = st.columns(2)
+
+# Left column: User input and summary type selection
+with col1:
+    # Initialize prompt variable
+    prompt = ""
+
+    # Add file uploader for text files
+    uploaded_file = st.file_uploader("Tải lên một tệp văn bản (.txt)", type=["txt"])
+
+    # If a file is uploaded, read its content and set it as the prompt
+    if uploaded_file is not None:
+        prompt = uploaded_file.read().decode("utf-8")
+
+    # Input text area
+    prompt = st.text_area(
+        "Nhập văn bản cần tóm tắt, tối đa 5000 từ",
+        value=prompt,
+        height=300,
+        max_chars=5000,
+        key="input_text_area",
+    )
+
+    # Add input for summary type selection below the text area
+    summary_type = st.selectbox(
+        "Chọn loại tóm tắt:", ("Tóm tắt ngắn gọn", "Tóm tắt chi tiết")
+    )
+
+    # Button to submit the text
+    submit = st.button("Tóm tắt", type="primary")
+
+# Right column: Display instructions and results
+with col2:
+    # Always show instructions
+    st.markdown(
+        """
+        <div style="text-align:left; margin-top:20px;">
+            <h3>Hướng dẫn sử dụng:</h3>
+            <p>1. Nhập dữ liệu hoặc dán dữ liệu vào ô bên trái.</p>
+            <p>2. Chọn tùy chọn: tóm tắt ngắn gọn hay tóm tắt chi tiết.</p>
+            <p>3. Bấm nút Tóm Tắt và tận hưởng kết quả.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <hr style="border: 1px solid #ddd; margin-top: 10px; margin-bottom: 10px;">
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Display loading state
+    result = ""
+    if submit and prompt:
+        with st.spinner("Đang xử lý..."):
+            try:
+                # Send request to API
+                api_url = "http://localhost:5005/predict"  # Replace with actual API URL
+                headers = {"Content-Type": "application/json"}
+                data = {"text": prompt, "type": summary_type}
+
+                response = requests.post(api_url, json=data, headers=headers)
+
+                # Handle API response
+                if response.status_code == 200:
+                    response_data = response.json()
+                    st.toast("Hoàn thành", icon="✅")
+                    result = response_data["data"]
+                else:
+                    result = "Error: Unable to summarize the text."
+            except Exception as e:
+                result = f"Error: {str(e)}"
+
+            # Store the result in session state
+            st.session_state.result_text = result
+
+    # Display result if available with max height of 400px and scroll enabled
+    if st.session_state.result_text:
+        st.markdown(
+            f"""
+                <div style="max-height: 400px; overflow-y: auto; padding: 10px;">
+                    {st.session_state.result_text}</div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+#12/9/2024 model selected
+import streamlit as st
+import requests
+from io import BytesIO
+
+# Set the app to wide mode
+st.set_page_config(layout="wide")
+
+st.title("Công cụ tóm tắt văn bản")
+
+# Initialize session state for storing assistant messages and result text
+if "assistant_messages" not in st.session_state:
+    st.session_state.assistant_messages = []
+if "result_text" not in st.session_state:
+    st.session_state.result_text = ""
+
+# Split the page into two columns
+col1, col2 = st.columns(2)
+
+# Left column: User input and summary type selection
+with col1:
+    # Initialize prompt variable
+    prompt = ""
+
+    # Add file uploader for text files
+    uploaded_file = st.file_uploader("Tải lên một tệp văn bản (.txt)", type=["txt"])
+
+    # If a file is uploaded, read its content and set it as the prompt
+    if uploaded_file is not None:
+        prompt = uploaded_file.read().decode("utf-8")
+
+    # Input text area
+    prompt = st.text_area(
+        "Nhập văn bản cần tóm tắt, tối đa 5000 từ",
+        value=prompt,
+        height=300,
+        max_chars=5000,
+        key="input_text_area",
+    )
+
+    # Add input for summary type selection below the text area
+    summary_type = st.selectbox(
+        "Chọn loại tóm tắt:", ("Tóm tắt ngắn gọn", "Tóm tắt chi tiết")
+    )
+
+    # Add model selection
+    model_type = st.selectbox(
+        "Chọn mô hình:", ("2b", "7b")
+    )
+
+    # Button to submit the text
+    submit = st.button("Tóm tắt", type="primary")
+
+# Right column: Display instructions and results
+with col2:
+    # Always show instructions
+    st.markdown(
+        """
+        <div style="text-align:left; margin-top:20px;">
+            <h3>Hướng dẫn sử dụng:</h3>
+            <p>1. Nhập dữ liệu hoặc dán dữ liệu vào ô bên trái.</p>
+            <p>2. Chọn tùy chọn: tóm tắt ngắn gọn hay tóm tắt chi tiết.</p>
+            <p>3. Chọn mô hình: 2b hoặc 7b.</p>
+            <p>4. Bấm nút Tóm Tắt và tận hưởng kết quả.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <hr style="border: 1px solid #ddd; margin-top: 10px; margin-bottom: 10px;">
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Display loading state
+    result = ""
+    if submit and prompt:
+        with st.spinner("Đang xử lý..."):
+            try:
+                # Send request to API
+                api_url = "http://localhost:5005/predict"  # Replace with actual API URL
+                headers = {"Content-Type": "application/json"}
+                data = {"text": prompt, "type": summary_type, "model": model_type}
+
+                response = requests.post(api_url, json=data, headers=headers)
+
+                # Handle API response
+                if response.status_code == 200:
+                    response_data = response.json()
+                    st.toast("Hoàn thành", icon="✅")
+                    result = response_data["data"]
+                else:
+                    result = "Error: Unable to summarize the text."
+            except Exception as e:
+                result = f"Error: {str(e)}"
+
+            # Store the result in session state
+            st.session_state.result_text = result
+
+    # Display result if available with max height of 400px and scroll enabled
+    if st.session_state.result_text:
+        st.markdown(
+            f"""
+                <div style="max-height: 400px; overflow-y: auto; padding: 10px;">
+                    {st.session_state.result_text}</div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+#12/9/2024 Add docx run
+import streamlit as st
+import requests
+from io import BytesIO
+import docx2txt
+
+# Set the app to wide mode
+st.set_page_config(layout="wide")
+
+st.title("Công cụ tóm tắt văn bản")
+
+# Initialize session state for storing assistant messages and result text
+if "assistant_messages" not in st.session_state:
+    st.session_state.assistant_messages = []
+if "result_text" not in st.session_state:
+    st.session_state.result_text = ""
+
+# Split the page into two columns
+col1, col2 = st.columns(2)
+
+# Left column: User input and summary type selection
+with col1:
+    # Initialize prompt variable
+    prompt = ""
+
+    # Add file uploader for text files
+    uploaded_file = st.file_uploader("Tải lên một tệp văn bản (.txt, .doc, .docx)", type=["txt", "doc", "docx"])
+
+    # If a file is uploaded, read its content and set it as the prompt
+    if uploaded_file is not None:
+        file_extension = uploaded_file.name.split('.')[-1].lower()
+        if file_extension == "txt":
+            prompt = uploaded_file.read().decode("utf-8")
+        elif file_extension in ["doc", "docx"]:
+            # Handle .doc and .docx files
+            with BytesIO(uploaded_file.read()) as file:
+                if file_extension == "docx":
+                    # Extract text from .docx file
+                    prompt = docx2txt.process(file)
+                elif file_extension == "doc":
+                    st.error("Định dạng .doc không được hỗ trợ. Vui lòng chuyển đổi sang .docx.")
+    
+    # Input text area
+    prompt = st.text_area(
+        "Nhập văn bản cần tóm tắt, tối đa 5000 từ",
+        value=prompt,
+        height=300,
+        max_chars=5000,
+        key="input_text_area",
+    )
+
+    # Add input for summary type selection below the text area
+    summary_type = st.selectbox(
+        "Chọn loại tóm tắt:", ("Tóm tắt ngắn gọn", "Tóm tắt chi tiết")
+    )
+
+    # Add model selection
+    model_type = st.selectbox(
+        "Chọn mô hình:", ("2b", "7b")
+    )
+
+    # Button to submit the text
+    submit = st.button("Tóm tắt", type="primary")
+
+# Right column: Display instructions and results
+with col2:
+    # Always show instructions
+    st.markdown(
+        """
+        <div style="text-align:left; margin-top:20px;">
+            <h3>Hướng dẫn sử dụng:</h3>
+            <p>1. Nhập dữ liệu hoặc dán dữ liệu vào ô bên trái.</p>
+            <p>2. Chọn tùy chọn: tóm tắt ngắn gọn hay tóm tắt chi tiết.</p>
+            <p>3. Chọn mô hình: 2b hoặc 7b.</p>
+            <p>4. Bấm nút Tóm Tắt và tận hưởng kết quả.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <hr style="border: 1px solid #ddd; margin-top: 10px; margin-bottom: 10px;">
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Display loading state
+    result = ""
+    if submit and prompt:
+        with st.spinner("Đang xử lý..."):
+            try:
+                # Send request to API
+                api_url = "http://localhost:5005/predict"  # Replace with actual API URL
+                headers = {"Content-Type": "application/json"}
+                data = {"text": prompt, "type": summary_type, "model": model_type}
+
+                response = requests.post(api_url, json=data, headers=headers)
+
+                # Handle API response
+                if response.status_code == 200:
+                    response_data = response.json()
+                    st.toast("Hoàn thành", icon="✅")
+                    result = response_data["data"]
+                else:
+                    result = "Error: Unable to summarize the text."
+            except Exception as e:
+                result = f"Error: {str(e)}"
+
+            # Store the result in session state
+            st.session_state.result_text = result
+
+    # Display result if available with max height of 400px and scroll enabled
+    if st.session_state.result_text:
+        st.markdown(
+            f"""
+                <div style="max-height: 400px; overflow-y: auto; padding: 10px;">
+                    {st.session_state.result_text}</div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+# 12/9/2024 Add docx and txt convert
+import streamlit as st
+import requests
+from io import BytesIO
+from docx import Document
+
+# Set the app to wide mode
+st.set_page_config(layout="wide")
+
+st.title("Công cụ tóm tắt văn bản")
+
+# Initialize session state for storing assistant messages and result text
+if "assistant_messages" not in st.session_state:
+    st.session_state.assistant_messages = []
+if "result_text" not in st.session_state:
+    st.session_state.result_text = ""
+
+# Split the page into two columns
+col1, col2 = st.columns(2)
+
+# Left column: User input and summary type selection
+with col1:
+    # Initialize prompt variable
+    prompt = ""
+
+    # Add file uploader for text files
+    uploaded_file = st.file_uploader("Tải lên một tệp văn bản (.txt, .docx)", type=["txt", "docx"])
+
+    # If a file is uploaded, process it based on its type
+    if uploaded_file is not None:
+        file_extension = uploaded_file.name.split('.')[-1].lower()
+        if file_extension == 'txt':
+            prompt = uploaded_file.read().decode("utf-8")
+        elif file_extension == 'docx':
+            # Save uploaded file to a temporary location
+            with open("temp_file.docx", "wb") as f:
+                f.write(uploaded_file.read())
+
+            # Process the .docx file using python-docx
+            doc = Document("temp_file.docx")
+            prompt = "\n".join([para.text for para in doc.paragraphs])
+
+    # Input text area
+    prompt = st.text_area(
+        "Nhập văn bản cần tóm tắt, tối đa 5000 từ",
+        value=prompt,
+        height=300,
+        max_chars=5000,
+        key="input_text_area",
+    )
+
+    # Add input for summary type selection below the text area
+    summary_type = st.selectbox(
+        "Chọn loại tóm tắt:", ("Tóm tắt ngắn gọn", "Tóm tắt chi tiết")
+    )
+
+    # Add model selection
+    model_type = st.selectbox(
+        "Chọn mô hình:", ("2b", "7b")
+    )
+
+    # Button to submit the text
+    submit = st.button("Tóm tắt", type="primary")
+
+# Right column: Display instructions and results
+with col2:
+    # Always show instructions
+    st.markdown(
+        """
+        <div style="text-align:left; margin-top:20px;">
+            <h3>Hướng dẫn sử dụng:</h3>
+            <p>1. Nhập dữ liệu hoặc dán dữ liệu vào ô bên trái.</p>
+            <p>2. Chọn tùy chọn: tóm tắt ngắn gọn hay tóm tắt chi tiết.</p>
+            <p>3. Chọn mô hình: 2b hoặc 7b.</p>
+            <p>4. Bấm nút Tóm Tắt và tận hưởng kết quả.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <hr style="border: 1px solid #ddd; margin-top: 10px; margin-bottom: 10px;">
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Display loading state
+    result = ""
+    if submit and prompt:
+        with st.spinner("Đang xử lý..."):
+            try:
+                # Send request to API
+                api_url = "http://localhost:5005/predict"  # Replace with actual API URL
+                headers = {"Content-Type": "application/json"}
+                data = {"text": prompt, "type": summary_type, "model": model_type}
+
+                response = requests.post(api_url, json=data, headers=headers)
+
+                # Handle API response
+                if response.status_code == 200:
+                    response_data = response.json()
+                    st.toast("Hoàn thành", icon="✅")
+                    result = response_data["data"]
+                else:
+                    result = "Error: Unable to summarize the text."
+            except Exception as e:
+                result = f"Error: {str(e)}"
+
+            # Store the result in session state
+            st.session_state.result_text = result
+
+    # Display result if available with max height of 400px and scroll enabled
+    if st.session_state.result_text:
+        st.markdown(
+            f"""
+                <div style="max-height: 400px; overflow-y: auto; padding: 10px;">
+                    {st.session_state.result_text}</div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+# 13/9 add dotx, docx, pdf
+import streamlit as st
+import requests
+from io import BytesIO
+import docx2txt
+import fitz  # PyMuPDF
+import os
+
+# Set the app to wide mode
+st.set_page_config(layout="wide")
+
+st.title("Công cụ tóm tắt văn bản")
+
+# Initialize session state for storing assistant messages and result text
+if "assistant_messages" not in st.session_state:
+    st.session_state.assistant_messages = []
+if "result_text" not in st.session_state:
+    st.session_state.result_text = ""
+
+# Split the page into two columns
+col1, col2 = st.columns(2)
+
+# Left column: User input and summary type selection
+with col1:
+    # Initialize prompt variable
+    prompt = ""
+
+    # Add file uploader for text files
+    uploaded_file = st.file_uploader("Tải lên một tệp văn bản (.txt, .docx, .pdf)", type=["txt", "docx", "dotx", "pdf"])
+
+    # If a file is uploaded, process it based on its type
+    if uploaded_file is not None:
+        file_extension = uploaded_file.name.split('.')[-1].lower()
+        temp_filename = f"temp_file.{file_extension}"
+
+        if file_extension == 'txt':
+            prompt = uploaded_file.read().decode("utf-8")
+        elif file_extension == 'docx' or file_extension == 'dotx':
+            # Save uploaded file to a temporary location
+            with open(temp_filename, "wb") as f:
+                f.write(uploaded_file.read())
+
+            # Process the .docx file using docx2txt
+            prompt = docx2txt.process(temp_filename)
+        elif file_extension == 'pdf':
+            # Save uploaded file to a temporary location
+            with open(temp_filename, "wb") as f:
+                f.write(uploaded_file.read())
+
+            # Process the .pdf file using PyMuPDF
+            doc = fitz.open(temp_filename)
+            prompt = ""
+            for page in doc:
+                prompt += page.get_text('text').replace('\n', '')
+            doc.close()
+
+        os.remove(temp_filename)
+
+    # Input text area
+    prompt = st.text_area(
+        "Nhập văn bản cần tóm tắt, tối đa 5000 từ",
+        value=prompt,
+        height=300,
+        max_chars=5000,
+        key="input_text_area",
+    )
+
+    # Add input for summary type selection below the text area
+    summary_type = st.selectbox(
+        "Chọn loại tóm tắt:", ("Tóm tắt ngắn gọn", "Tóm tắt chi tiết")
+    )
+
+    # Add model selection
+    model_type = st.selectbox(
+        "Chọn mô hình:", ("2b", "7b")
+    )
+
+    # Button to submit the text
+    submit = st.button("Tóm tắt", type="primary")
+
+# Right column: Display instructions and results
+with col2:
+    # Always show instructions
+    st.markdown(
+        """
+        <div style="text-align:left; margin-top:20px;">
+            <h3>Hướng dẫn sử dụng:</h3>
+            <p>1. Nhập dữ liệu hoặc dán dữ liệu vào ô bên trái.</p>
+            <p>2. Chọn tùy chọn: tóm tắt ngắn gọn hay tóm tắt chi tiết.</p>
+            <p>3. Chọn mô hình: 2b hoặc 7b.</p>
+            <p>4. Bấm nút Tóm Tắt và tận hưởng kết quả.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <hr style="border: 1px solid #ddd; margin-top: 10px; margin-bottom: 10px;">
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Display loading state
+    result = ""
+    if submit and prompt:
+        with st.spinner("Đang xử lý..."):
+            try:
+                # Send request to API
+                api_url = "http://localhost:5005/predict"  # Replace with actual API URL
+                headers = {"Content-Type": "application/json"}
+                data = {"text": prompt, "type": summary_type, "model": model_type}
+
+                response = requests.post(api_url, json=data, headers=headers)
+
+                # Handle API response
+                if response.status_code == 200:
+                    response_data = response.json()
+                    st.toast("Hoàn thành", icon="✅")
+                    result = response_data["data"]
+                else:
+                    result = "Error: Unable to summarize the text."
+            except Exception as e:
+                result = f"Error: {str(e)}"
+
+            # Store the result in session state
+            st.session_state.result_text = result
+
+    # Display result if available with max height of 400px and scroll enabled
+    if st.session_state.result_text:
+        st.markdown(
+            f"""
+                <div style="max-height: 400px; overflow-y: auto; padding: 10px;">
+                    {st.session_state.result_text}</div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+#13/9/2024: version update
+import streamlit as st
+import requests
+from io import BytesIO
+import docx2txt
+import fitz  # PyMuPDF
+import os
+
+# Set the app to wide mode
+st.set_page_config(layout="wide")
+
+st.title("Công cụ tóm tắt văn bản")
+
+# Initialize session state for storing assistant messages and result text
+if "assistant_messages" not in st.session_state:
+    st.session_state.assistant_messages = []
+if "result_text" not in st.session_state:
+    st.session_state.result_text = ""
+if "compression_ratio" not in st.session_state:
+    st.session_state.compression_ratio = 50  # Default value
+
+# Split the page into two columns
+col1, col2 = st.columns(2)
+
+# Left column: User input and summary type selection
+with col1:
+    # Initialize prompt variable
+    prompt = ""
+
+    # Add file uploader for text files
+    uploaded_file = st.file_uploader("Tải lên một tệp văn bản (.txt, .docx, .pdf)", type=["txt", "docx", "dotx", "pdf"])
+
+    # If a file is uploaded, process it based on its type
+    if uploaded_file is not None:
+        file_extension = uploaded_file.name.split('.')[-1].lower()
+        temp_filename = f"temp_file.{file_extension}"
+
+        # Save uploaded file to a temporary location
+        with open(temp_filename, "wb") as f:
+            f.write(uploaded_file.read())
+
+        # Process the file based on its extension
+        if file_extension == 'txt':
+            prompt = open(temp_filename, "r", encoding="utf-8").read()
+        elif file_extension in ['docx', 'dotx']:
+            prompt = docx2txt.process(temp_filename)
+        elif file_extension == 'pdf':
+            doc = fitz.open(temp_filename)
+            prompt = ""
+            for page in doc:
+                prompt += page.get_text('text').replace('\n', '')
+            doc.close()
+
+        # Clean up temporary file
+        os.remove(temp_filename)
+
+    # Input text area
+    prompt = st.text_area(
+        "Nhập văn bản cần tóm tắt, tối đa 5000 từ",
+        value=prompt,
+        height=300,
+        max_chars=5000,
+        key="input_text_area",
+    )
+
+    # Add input for summary type selection below the text area
+    summary_type = st.selectbox(
+        "Chọn loại tóm tắt:", ("Tóm tắt ngắn gọn", "Tóm tắt chi tiết")
+    )
+
+    # Add input for compression ratio
+    compression_ratio = st.selectbox(
+        "Chọn tỷ lệ nén:", [50, 60, 70, 80, 90] if summary_type == "Tóm tắt chi tiết" else [50, 60, 70]
+    )
+    st.session_state.compression_ratio = compression_ratio
+
+    # Add model selection
+    model_type = st.selectbox(
+        "Chọn mô hình:", ("2b", "7b")
+    )
+
+    # Button to submit the text
+    submit = st.button("Tóm tắt", type="primary")
+
+# Right column: Display instructions and results
+with col2:
+    # Always show instructions
+    st.markdown(
+        """
+        <div style="text-align:left; margin-top:20px;">
+            <h3>Hướng dẫn sử dụng:</h3>
+            <p>1. Nhập dữ liệu hoặc dán dữ liệu vào ô bên trái.</p>
+            <p>2. Chọn tùy chọn: tóm tắt ngắn gọn hay tóm tắt chi tiết.</p>
+            <p>3. Chọn tỷ lệ nén phù hợp.</p>
+            <p>4. Chọn mô hình: 2b hoặc 7b.</p>
+            <p>5. Bấm nút Tóm Tắt và tận hưởng kết quả.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <hr style="border: 1px solid #ddd; margin-top: 10px; margin-bottom: 10px;">
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Display loading state and result
+    result = ""
+    if submit and prompt:
+        with st.spinner("Đang xử lý..."):
+            try:
+                # Send request to API
+                api_url = "http://localhost:5005/predict"  # Replace with actual API URL
+                headers = {"Content-Type": "application/json"}
+                data = {"text": prompt, "type": summary_type, "model": model_type, "compression_ratio": compression_ratio}
+
+                response = requests.post(api_url, json=data, headers=headers)
+
+                # Handle API response
+                if response.status_code == 200:
+                    response_data = response.json()
+                    st.toast("Hoàn thành", icon="✅")
+                    result = response_data["data"]
+                else:
+                    result = "Error: Unable to summarize the text."
+            except Exception as e:
+                result = f"Error: {str(e)}"
+
+            # Store the result in session state
+            st.session_state.result_text = result
+
+    # Display result if available with max height of 400px and scroll enabled
+    if st.session_state.result_text:
+        st.markdown(
+            f"""
+                <div style="max-height: 400px; overflow-y: auto; padding: 10px;">
+                    <p>{compression_message}</p>
+                    {st.session_state.result_text}</div>
+            """,
+            unsafe_allow_html=True,
+        )
+        # Copy to clipboard button
+        st.button("Sao chép vào bộ nhớ đệm", on_click=lambda: st.write(f"```{st.session_state.result_text}```"))
