@@ -69,10 +69,10 @@ class SummarizeModel():
                               cụm '## Tóm tắt: ' ở đầu văn bản, văn bản đã tóm tắt phải được đặt sau cụm này.
                             - Văn bản đã tóm tắt phải được chuẩn hoá, loại bỏ các khoảng trống dư thừa.
                             - Tóm tắt một cách chi tiết nhất có thể.
-                            - Có thể thêm các ý chính hoặc thông tin quan trọng.
                             - Độ dài tối đa {limit} từ.
-                            - Nếu có các sự kiện hoặc cột mốc lịch sử trong văn bản, 
-                              hãy trích thêm và nhấn mạnh những sự kiện này.
+                            - Nếu có các sự kiện, ý chỉnh, thông tin quan trọng hoặc cột mốc lịch sử trong văn bản
+                             thì bạn hãy đưa vào trong văn bản tóm tắt nhé.
+                            - Vui lòng viết tất cả thành 1 đoạn văn chứ không liệt kê ý.
                         <end_of_turn>
                         """
         print(f"\033[95m[Prompt]: {prompt}\033[0m")

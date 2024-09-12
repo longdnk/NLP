@@ -1,7 +1,6 @@
 import streamlit as st
 import requests
 from io import BytesIO
-
 # Set the app to wide mode
 st.set_page_config(layout="wide")
 
