@@ -3,6 +3,9 @@ import helper.prompt as prompt_generator
 from gemma.config import get_model_config
 from gemma.model import GemmaForCausalLM
 from datetime import datetime
+import os
+
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
 # Choose variant and machine type
 VARIANT = '7b-it-quant'
 MACHINE_TYPE = 'cuda' if torch.cuda.is_available() else 'cpu'
