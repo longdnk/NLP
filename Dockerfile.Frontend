@@ -4,7 +4,7 @@ FROM python:3.10-slim
 WORKDIR /frontend
 
 # Sao chép tất cả các tệp và thư mục trừ src
-COPY ./run.py /frontend/run.py
+COPY ./src/gui/gui.py /frontend/gui.py
 # Bạn có thể thêm các thư mục hoặc tệp cần thiết riêng lẻ
 # COPY ./other_dir /frontend/other_dir
 
@@ -18,4 +18,4 @@ RUN pip install docx2txt PyMuPDF
 EXPOSE 8501
 
 # Đặt entrypoint để chạy Streamlit
-ENTRYPOINT ["streamlit", "run", "run.py"]
+ENTRYPOINT ["streamlit", "run", "gui.py"]

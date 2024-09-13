@@ -104,19 +104,3 @@ hoặc <br>
 
 Sơ đồ chung của hệ thống khi triển khai
 ![System](reports/figures/docker.png)
-
-## 5. Thông tin các trường của API
-``` python
-class ModelEntity(BaseModel):
-    text: str
-    type: str
-    model: str | None = None
-    compression: float
-```
-**text**: là văn bản đầu vào. <br>
-
-**type**: là loại tóm tắt, mặc định là tóm tắt ngắn gọn. <br>
-
-**model**: mô hình dùng để tóm tắt, mặc định là dùng mô hình 2 tỉ tham số. <br>
-
-**compression**: tỉ lệ nén của văn bản so với văn bản gốc

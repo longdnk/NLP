@@ -1,0 +1,19 @@
+[1] Shravan Koninti. GEMMA: Introducing New State-of-the-Art Open
+Model by Google. https://medium.com/@shravankoninti/gemma-
+introducing- new- state- of- the- art- open- model- by- google-
+caae9fe29972. Accessed: 2024-09-06. 2023.
+[2] Ritvik19. Papers Explained #157: GEMMA 2. https://ritvik19.
+medium.com/papers-explained-157-gemma-2-f1b75b56b9f2. Ac-
+cessed: 2024-09-06. 2023.
+[3] Bikash Santra, Avishek Kumar Shaw, and Dipti Prasad Mukherjee.
+“Part-based annotation-free fine-grained classification of images of re-
+tail products”. In: Pattern Recognition 121 (2022), p. 108257.
+[4] A Sinha, S Banerjee, and P Chattopadhyay. “An Improved Deep Learn-
+ing Approach For Product Recognition on Racks in Retail Stores.
+arXiv 2022”. In: arXiv preprint arXiv:2202.13081 (2022).
+[5] Ashish Vaswani et al. “Attention Is All You Need”. In: Advances in
+neural information processing systems. Vol. 30. 2017. url: https :
+//arxiv.org/abs/1706.03762.
+[6] Width.ai. BERT for Extractive Text Summarization on Lectures. https:
+//www.width.ai/post/bert-for-extractive-text-summarization-
+on-lectures. Accessed: 2024-09-06. n.d
