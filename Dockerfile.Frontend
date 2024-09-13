@@ -11,6 +11,9 @@ COPY ./run.py /frontend/run.py
 # Cài đặt các dependencies
 RUN pip install streamlit
 
+# Cài đặt gói để đọc định dạng docx và PDF
+RUN pip install docx2txt PyMuPDF
+
 # Mở port 8501
 EXPOSE 8501
 

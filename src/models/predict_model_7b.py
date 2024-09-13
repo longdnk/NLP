@@ -40,7 +40,7 @@ class Model7B():
         now = datetime.now()
         # Định dạng thời gian theo ngày/tháng/năm và giờ/phút/giây
         formatted_time = now.strftime("%d/%m/%Y %H:%M:%S")
-
+    
         word_count = len(sentence.split(" "))
         limit = 200
 
@@ -51,13 +51,13 @@ class Model7B():
             low_range = int(word_count * compression)
             limit = low_range if low_range > limit else limit
             prompt = prompt_generator.short_predict_prompt(
-                sentence=sentence, limit=limit
+                sentence=sentence, limit=limit + 1
             )
 
         elif type == "Tóm tắt chi tiết":
             limit = int(word_count * compression)
             prompt = prompt_generator.long_predict_prompt(
-                sentence=sentence, limit=limit
+                sentence=sentence, limit=limit + 1
             )
 
         print(f"\033[95m[Prompt]: {prompt}\033[0m")
@@ -66,7 +66,7 @@ class Model7B():
 
         # Generate sample
         result = self.model.generate(
-            prompts=prompt, device=self.device, output_len=limit
+            prompts=prompt, device=self.device, output_len=limit + 1
         )
 
         result = result.replace("<end_of_turn>", "")
