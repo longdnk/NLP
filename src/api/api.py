@@ -53,7 +53,7 @@ async def post(data: ModelEntity):
 
     model_selected = model_2b if model_params == '2b' else model_7b
 
-    result = model_selected.predict(data.text, data.type)
+    result = model_selected.predict(data.text, data.type, compression_ratio)
 
     return {"message": "Done", "status": status.HTTP_200_OK, "data": result}
 

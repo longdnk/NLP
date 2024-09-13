@@ -115,7 +115,7 @@ with col2:
             try:
                 # Send request to API
                 api_url = (
-                    "http://192.169.50.47:5005/predict"
+                    "http://192.168.50.47:5005/predict"
                     if model_type == "2b"
                     else "http://192.168.50.110:5005/predict"
                 )  # Replace with actual API URL
