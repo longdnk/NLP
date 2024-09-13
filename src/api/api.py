@@ -15,6 +15,7 @@ class ModelEntity(BaseModel):
     text: str
     type: str
     model: str | None = None
+    compression: float 
 
 
 def check_match(string, array):
@@ -40,6 +41,14 @@ async def post(data: ModelEntity):
         return handle_with_status(
             status.HTTP_422_UNPROCESSABLE_ENTITY,
             "Hệ thống không cung cấp mô hình này, hãy kiểm tra lại !!!",
+        )
+
+    compression_ratio = data.compression / 100
+
+    if data.text == 'Tóm tắt chi tiết' and compression_ratio < 0.5:
+        return handle_with_status(
+            status.HTTP_400_BAD_REQUEST,
+            "Tính năng tóm tắt chi tiết cần độ nén tối thiểu ${50%} so với văn bản gốc"
         )
 
     model_selected = model_2b if model_params == '2b' else model_7b

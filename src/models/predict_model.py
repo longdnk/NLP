@@ -36,7 +36,7 @@ class Model2B:
         model.load_weights(self.checkpoint_path)
         self.model = model.to(self.device).eval()
 
-    def predict(self, sentence: str, type: str):
+    def predict(self, sentence: str, type: str, compression: float):
         # Lấy thời gian hiện tại
         now = datetime.now()
         # Định dạng thời gian theo ngày/tháng/năm và giờ/phút/giây
@@ -49,14 +49,14 @@ class Model2B:
 
         prompt = ""
         if type == "Tóm tắt ngắn gọn":
-            low_range = int(word_count * 0.5)
+            low_range = int(word_count * compression)
             limit = low_range if low_range > limit else limit
             prompt = prompt_generator.short_predict_prompt(
                 sentence=sentence, limit=limit
             )
 
         elif type == "Tóm tắt chi tiết":
-            limit = int(word_count * 0.8)
+            limit = int(word_count * compression)
             prompt = prompt_generator.long_predict_prompt(
                 sentence=sentence, limit=limit
             )
@@ -66,15 +66,14 @@ class Model2B:
         prompt.encode("utf-8")
 
         # Generate sample
-        result = "OK DONE"
-        # result = self.model.generate(
-        #     prompts=prompt, device=self.device, output_len=limit
-        # )
+        result = self.model.generate(
+            prompts=prompt, device=self.device, output_len=limit
+        )
 
-        # result = result.replace("<end_of_turn>", "")
-        # result = result.replace("<div>", "")
-        # result = result.replace("</div>", "")
-        # result = result if len(result) > 0 else "Lỗi hệ thống, vui lòng thử lại."
+        result = result.replace("<end_of_turn>", "")
+        result = result.replace("<div>", "")
+        result = result.replace("</div>", "")
+        result = result if len(result) > 0 else "Lỗi hệ thống, vui lòng thử lại."
 
         # Lấy thời gian hiện tại
         now = datetime.now()
